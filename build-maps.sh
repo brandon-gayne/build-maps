@@ -1,6 +1,8 @@
 #!/bin/bash
-for dir in /mnt/efs/worlds/*; do
-	mkdir /home/ec2-user/maps/`basename $dir`
-	docker run -v $dir/world/:/world -v /home/ec2-user/maps/`basename $dir`:/output unmined
-	aws s3 sync /home/ec2-user/maps/`basename $dir` s3://minecraft-`basename $dir` 
+for dir in /worlds/*; do
+	root=`basename $dir`
+	mkdir /$root
+	/unmined/unmined-cli web render --world=/world/$root --output=/$root
+	mv /$root/unmined.index.html /$root/index.html
+	aws s3 sync /$root s3://minecraft-$root
 done
